@@ -1,0 +1,25 @@
+@mixin vertical-middle($top: 50%) {
+    position: absolute;
+    top: $top;
+    transform: translateY(-50%);
+}
+
+@mixin arrow-button($background, $color: $textColor, $border: none) {
+    background: $background;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    border: $border;
+    color: $color;
+}
+
+@mixin section-base($space) {
+    padding: $space 0;
+}
+
+@mixin center($width){
+    max-width: $width;
+    margin: 0 auto;
+}

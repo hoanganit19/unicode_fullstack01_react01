@@ -1,0 +1,51 @@
+@import '../../Assets/Styles/Variable';
+@import '../../Assets/Styles/Mixin';
+
+.banner-box{
+    position: relative;
+
+    .banner-box__controls{
+    
+        .banner-box__controls--prev{
+            @include vertical-middle;
+            @include arrow-button(#fff, #333);
+            left: 5px;
+        
+        }
+
+        .banner-box__controls--next{
+            @include vertical-middle;
+            @include arrow-button(#fff, #333);
+            right: 5px;
+        
+        }
+    }
+
+    .banner-box__dots{
+        display: flex;
+        justify-content: center;
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        span{
+            display: block;
+            width: 15px;
+            height: 15px;
+            background-color: transparent;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            margin: 0 5px;
+            cursor: pointer;
+
+            &.active{
+                background-color: #fff;
+            }
+
+            &:hover{
+                @extend .active;
+            }
+        }
+    }
+}
+

@@ -1,0 +1,45 @@
+@import '../../Assets/Styles/Variable';
+@import '../../Assets/Styles/Mixin';
+
+.whyus-box{
+    @include section-base(30px);
+    h2{
+        text-align: center;
+        text-transform: uppercase;
+        font-size: 2.14rem;
+       
+        color: #2c2922;
+    }
+
+    .whyus-box__lists{
+        margin: 40px 0;
+        .whyus-box--item{
+            width: 75%;
+            @media screen and (max-width: 992px) {
+                width: 100%;
+            }
+
+            @media screen and (max-width: 576px) {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            h3{
+                text-transform: uppercase;
+                font-size: 1.14rem;
+                color: #0f0f0f;
+            }
+        }
+    }
+
+    .whyus-box__button{
+        text-align: center;
+        a{
+            border: 2px solid #e6e6e6;
+            padding: 10px 50px;
+            font-size: 1.14rem;
+            color: #8c877d;
+            text-transform: uppercase;
+        }
+    }
+   
+}
