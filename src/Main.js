@@ -6,6 +6,8 @@ import Button from "./Components/Props/Button";
 import Products from "./Components/Props/Products";
 import Counter from "./Components/Props/Counter";
 import CurrencyConvert from "./Components/CurrencyConvert/CurrencyConvert";
+import Login from "./Components/Form/Login";
+import Todo from "./Components/Form/Todo";
 
 export default function Main() {
 
@@ -66,7 +68,8 @@ export default function Main() {
       {/* <Button onReceiveData={handleReceiveData}/> */}
       {/* <Products name="Sản phẩm 1" price={12000}/> */}
       {/* <Counter /> */}
-      <CurrencyConvert />
+      {/* <CurrencyConvert /> */}
+      <Todo />
     </>
   );
 }

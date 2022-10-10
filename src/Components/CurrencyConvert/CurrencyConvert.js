@@ -16,6 +16,7 @@ export class CurrencyConvert extends Component {
       vnd: vnd,
       usd: usd,
     });
+    
   };
 
   handleDataUsd = (usd, vnd) => {
