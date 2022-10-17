@@ -4,10 +4,11 @@ import Avatar from "./Components/Props/Avatar";
 import MemberInfo from "./Components/Props/MemberInfo";
 import Button from "./Components/Props/Button";
 import Products from "./Components/Props/Products";
-import Counter from "./Components/Props/Counter";
+//import Counter from "./Components/Props/Counter";
 import CurrencyConvert from "./Components/CurrencyConvert/CurrencyConvert";
 import Login from "./Components/Form/Login";
 import Todo from "./Components/Form/Todo";
+import Counter from "./Components/HOC/Counter";
 
 export default function Main() {
 
@@ -69,7 +70,8 @@ export default function Main() {
       {/* <Products name="Sản phẩm 1" price={12000}/> */}
       {/* <Counter /> */}
       {/* <CurrencyConvert /> */}
-      <Todo />
+      {/* <Todo name="Hoàng An"/> */}
+      <Counter />
     </>
   );
 }

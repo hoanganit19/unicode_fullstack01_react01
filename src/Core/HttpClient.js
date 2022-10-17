@@ -14,7 +14,10 @@ export default class HttpClient {
 
         const response = await fetch(url, options);
         const data = await response.json();
-        return data;
+        return {
+            response: response,
+            data: data
+        };
     }
 
     get = (url, params={}) => {

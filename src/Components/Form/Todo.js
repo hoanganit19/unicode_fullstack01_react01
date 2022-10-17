@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import "./Todo.scss";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -6,21 +6,33 @@ import { v4 as uniqueId } from "uuid";
 import Swal from "sweetalert2";
 import config from "../../Config.json";
 import HttpClient from "../../Core/HttpClient";
+import clsx from "clsx";
+import Button from "./Button";
+import { Color } from "../HOC/Color";
 
-const { SERVER_API } = config;
+const { SERVER_API, PER_PAGE } = config;
 
 export class Todo extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       name: "",
       doLists: [],
       isLoading: true,
+      status: "all",
+      totalPage: 0,
+      currentPage: 1,
     };
+
+    this.filters = {};
 
     this.todoApi = `${SERVER_API}/todos`;
 
     this.client = new HttpClient();
+
+    this.inputJobNameRef = createRef();
+
+    this.buttonRef = createRef();
   }
 
   addToDo = async (todo) => {
@@ -34,7 +46,9 @@ export class Todo extends Component {
 
     // const data = await response.json();
 
-    const data = await this.client.post(this.todoApi, todo);
+    const response = await this.client.post(this.todoApi, todo);
+
+    const data = response.data;
 
     if (typeof data === "object") {
       toast.success("Thêm công việc thành công");
@@ -110,7 +124,9 @@ export class Todo extends Component {
     // });
     // const data = await response.json();
 
-    const data = await this.client.delete(this.todoApi, id);
+    const response = await this.client.delete(this.todoApi, id);
+
+    const data = response.data;
 
     if (typeof data === "object") {
       this.getToDos();
@@ -149,9 +165,11 @@ export class Todo extends Component {
 
     // const data = await response.json();
 
-    const data = await this.client.patch(this.todoApi, id, {
+    const response = await this.client.patch(this.todoApi, id, {
       isCompleted: checkedStatus,
     });
+
+    const data = response.data;
 
     if (typeof data === "object") {
       if (checkedStatus) {
@@ -164,51 +182,89 @@ export class Todo extends Component {
     }
   };
 
-  handeSearchToDo = (e) => {
-    const keyword = e.target.value;
+  handleFilterChangeValue = (e) => {
+    if (e.target.dataset.status !== undefined) {
+      const status = e.target.dataset.status;
 
-    this.getSearchResult(keyword);
-  };
-
-  getSearchResult = async (keyword) => {
-    // const { keyword } = this.state;
-    // return doLists.filter((todo) => {
-    //   if (todo.name.indexOf(keyword) !== -1) {
-    //     return true;
-    //   }
-
-    //   return false;
-    // });
-    // const response = await fetch(this.todoApi + "?q=" + keyword);
-    // const data = await response.json();
-    const data = await this.client.get(this.todoApi, {
-      q: keyword
-    });
-
-    if (Array.isArray(data)) {
       this.setState({
-        doLists: data,
+        status: status,
       });
+
+      if (status !== "all") {
+        this.filters.isCompleted = status == "completed" ? true : false;
+      } else {
+        delete this.filters.isCompleted; //Xoá thuộc tính trong object
+      }
+    } else {
+      const keyword = e.target.value;
+      this.filters.q = keyword;
     }
+
+    this.getSearchResult(this.filters);
   };
 
-  getToDos = async () => {
+  // handeSearchToDo = (e) => {
+  //   const keyword = e.target.value;
+
+  //   this.getSearchResult(keyword);
+  // };
+
+  getSearchResult = async (filters = {}) => {
+    this.getToDos(1, filters);
+  };
+
+  getToDos = async (page = 1, filters={}) => {
     // const response = await fetch(this.todoApi);
 
     // const todos = await response.json();
 
-    const todos = await this.client.get(this.todoApi);
+    const paginate = {
+      _limit: PER_PAGE,
+      _page: page,
+    }
+    
+    const orderBy = {
+      _sort: 'id',
+      _order: 'DESC'
+    }
+
+    const params = {
+      ...paginate,
+      ...filters,
+      ...orderBy
+    }
+
+    const response = await this.client.get(this.todoApi, params);
+
+    const todos = response.data;
+
+    const totalRows = response.response.headers.get("x-total-count");
+
+    const totalPage = Math.ceil(totalRows / PER_PAGE);
+
     if (Array.isArray(todos)) {
       this.setState({
         doLists: todos,
         isLoading: false,
+        totalPage: totalPage,
+        currentPage: page,
       });
     }
   };
 
   componentDidMount = () => {
-    this.getToDos();
+    this.getToDos(); //mặc định trang 1
+    this.inputJobNameRef.current.focus();
+    //this.inputJobNameRef.current.style.border = '1px solid red';
+    this.buttonRef.current.style.color = 'yellow';
+    
   };
+
+  componentDidUpdate = (prevProps, prevState) => {
+    //Khi làm việc với phương thức này => Cần kiểm tra state hiện tại và prevState có khác nhau hay không?
+    //Nếu khác nhau => setState()
+    //Việc này giúp tránh xảy ra tình trạng vòng lặp vô hạn
+  }
 
   // componentDidUpdate = () => {
   //   console.log('componentDidUpdate');
@@ -218,20 +274,130 @@ export class Todo extends Component {
   //   console.log('componentWillUnmount');
   // }
 
+  getPaginate = () => {
+    const { totalPage, isLoading, currentPage } = this.state;
+
+    const paginationItems = [];
+    for (let page = 1; page <= totalPage; page++) {
+      paginationItems.push(
+        <li
+          className={clsx("page-item", page === currentPage && "active")}
+          key={page}
+        >
+          <a
+            className="page-link"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              this.goPaginate(page);
+            }}
+          >
+            {page}
+          </a>
+        </li>
+      );
+    }
+
+    return (
+      <>
+        {!isLoading && (
+          <nav className="d-flex justify-content-end">
+            <ul className="pagination pagination-sm">
+              {currentPage > 1 && (
+                <li className="page-item">
+                  <a className="page-link" href="#" onClick={this.goPrevPage}>
+                    Trước
+                  </a>
+                </li>
+              )}
+
+              {paginationItems}
+              {currentPage < totalPage && (
+                <li className="page-item">
+                  <a className="page-link" href="#" onClick={this.goNextPage}>
+                    Sau
+                  </a>
+                </li>
+              )}
+            </ul>
+          </nav>
+        )}
+      </>
+    );
+  };
+
+  goPaginate = (page) => {
+    this.getToDos(page, this.filters);
+  };
+
+  goPrevPage = (e) => {
+    e.preventDefault();
+    const { currentPage } = this.state;
+
+    if (currentPage > 1) {
+      this.getToDos(currentPage - 1, this.filters);
+    }
+  };
+
+  goNextPage = (e) => {
+    e.preventDefault();
+    const { currentPage, totalPage } = this.state;
+
+    if (currentPage < totalPage) {
+      this.getToDos(currentPage + 1, this.filters);
+    }
+  };
+
   render() {
-    let { doLists, name, isLoading } = this.state;
+    let { doLists, name, isLoading, status } = this.state;
 
     //doLists = this.getSearchResult();
 
     return (
       <div className="container">
-        <h2>Todo</h2>
+        <h2>{this.props.name}</h2>
         <input
           type="search"
           className="form-control"
           placeholder="Từ khoá..."
-          onChange={this.handeSearchToDo}
+          onChange={this.handleFilterChangeValue}
         />
+
+        <div className="btn-group mt-3">
+          <button
+            type="button"
+            className={clsx(
+              "btn btn-primary btn-sm",
+              status == "all" && "active"
+            )}
+            data-status="all"
+            onClick={this.handleFilterChangeValue}
+          >
+            Tất cả
+          </button>
+          <button
+            type="button"
+            className={clsx(
+              "btn btn-primary btn-sm",
+              status == "completed" && "active"
+            )}
+            data-status="completed"
+            onClick={this.handleFilterChangeValue}
+          >
+            Hoàn thành
+          </button>
+          <button
+            type="button"
+            className={clsx(
+              "btn btn-primary btn-sm",
+              status == "uncompleted" && "active"
+            )}
+            data-status="uncompleted"
+            onClick={this.handleFilterChangeValue}
+          >
+            Chưa hoàn thành
+          </button>
+        </div>
 
         <div className="mb-3">
           {isLoading ? (
@@ -278,16 +444,16 @@ export class Todo extends Component {
               placeholder="Tên công việc..."
               onChange={this.handleChangeValue}
               value={name}
+              ref={this.inputJobNameRef}
             />
-            <button type="submit" className="btn btn-primary">
-              Thêm
-            </button>
+            <Button ref={this.buttonRef}/>
           </div>
         </form>
+        {this.getPaginate()}
         <ToastContainer />
       </div>
     );
   }
 }
 
-export default Todo;
+export default Color(Todo); //Higher Order Component
