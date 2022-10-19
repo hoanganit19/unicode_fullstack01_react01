@@ -1,12 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import reportWebVitals from './reportWebVitals';
-import Main from './Main';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import reportWebVitals from "./reportWebVitals";
+import Main from "./Main";
+import StateProvider from "./Components/StateProvider/StateProvider";
 
-const root = ReactDOM.createRoot(document.querySelector('.main-content'));
+const root = ReactDOM.createRoot(document.querySelector(".main-content"));
 root.render(
   <React.StrictMode>
-    <Main />
+    <StateProvider>
+      <Main />
+    </StateProvider>
   </React.StrictMode>
 );
 

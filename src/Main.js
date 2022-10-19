@@ -9,6 +9,9 @@ import CurrencyConvert from "./Components/CurrencyConvert/CurrencyConvert";
 import Login from "./Components/Form/Login";
 import Todo from "./Components/Form/Todo";
 import Counter from "./Components/HOC/Counter";
+import Wrap from "./Components/GlobalState/Wrap";
+import ComA from "./Components/Context/ComA";
+import DemoContext from "./Components/DemoContext";
 
 export default function Main() {
 
@@ -71,7 +74,8 @@ export default function Main() {
       {/* <Counter /> */}
       {/* <CurrencyConvert /> */}
       {/* <Todo name="Hoàng An"/> */}
-      <Counter />
+      {/* <ComA /> */}
+      <DemoContext />
     </>
   );
 }
