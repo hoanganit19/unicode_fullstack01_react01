@@ -1,0 +1,21 @@
+.message {
+  max-height: 400px;
+  overflow: auto;  
+  .message-item {
+    margin-bottom: 15px;
+    p {
+      margin-bottom: 0;
+      &:first-child {
+        background: rgb(0, 130, 186);
+        color: #fff;
+        padding: 5px;
+        border-radius: 15px;
+      }
+      &:last-child {
+        font-size: 0.9rem;
+        font-style: italic;
+        color: #666;
+      }
+    }
+  }
+}

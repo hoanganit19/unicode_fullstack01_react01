@@ -12,6 +12,7 @@ import Counter from "./Components/HOC/Counter";
 import Wrap from "./Components/GlobalState/Wrap";
 import ComA from "./Components/Context/ComA";
 import DemoContext from "./Components/DemoContext";
+import Chat from "./Components/Chat/Chat";
 
 export default function Main() {
 
@@ -75,7 +76,8 @@ export default function Main() {
       {/* <CurrencyConvert /> */}
       {/* <Todo name="Hoàng An"/> */}
       {/* <ComA /> */}
-      <DemoContext />
+      {/* <DemoContext /> */}
+      <Chat />
     </>
   );
 }
